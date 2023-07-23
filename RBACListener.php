@@ -20,7 +20,6 @@ use cleanphp\base\Response;
 use cleanphp\base\Variables;
 use cleanphp\engine\EngineManager;
 use cleanphp\file\Log;
-use cleanphp\objects\StringBuilder;
 
 class RBACListener
 {
