@@ -35,7 +35,7 @@ class RBAC
      */
     public static function getRole(): ?string
     {
-        Session::getInstance()->start();
+        //Session::getInstance()->start();
         return Session::getInstance()->get("RBAC_ROLE") ?? "-1";
     }
 
