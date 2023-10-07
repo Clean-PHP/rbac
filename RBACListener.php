@@ -45,7 +45,7 @@ class RBACListener
         EventManager::trigger(self::RBAC_ROLE_DENY_EVENT, $role_data);
         $response = new Response();
         $response->code(self::HTTP_FORBIDDEN)
-            ->render(EngineManager::getEngine()->renderMsg(self::HTTP_FORBIDDEN, self::HTTP_MESSAGE, "对不起，你没有访问权限。"))
+            ->render(EngineManager::getEngine()->renderMsg(true, self::HTTP_FORBIDDEN, self::HTTP_MESSAGE, "对不起，你没有访问权限。"))
             ->send();
     }
 
