@@ -14,6 +14,7 @@
 
 namespace library\rbac;
 
+use cleanphp\App;
 use cleanphp\base\Controller;
 use cleanphp\base\EventManager;
 use cleanphp\base\Response;
@@ -40,25 +41,42 @@ class RBACListener
             return null;
         }
 
-        Log::record("权限信息", print_r($role_data,true));
+        App::$debug && Log::record("权限信息", print_r($role_data, true));
         //没有返回就是需要授权才能访问
         EventManager::trigger(self::RBAC_ROLE_DENY_EVENT, $role_data);
         $response = new Response();
-        $response->code(self::HTTP_FORBIDDEN)
-            ->render(EngineManager::getEngine()->renderMsg( self::HTTP_FORBIDDEN, self::HTTP_MESSAGE, "对不起，你没有访问权限。"))
+        $response
+            ->render(EngineManager::getEngine()->renderMsg(self::HTTP_FORBIDDEN, "对不起，你没有访问权限。", self::HTTP_MESSAGE))
             ->send();
     }
 
     function checkUrl($url, $role_data): bool
     {
-      //  dumps($url, $role_data);
+        //  dumps($url, $role_data);
         foreach ($role_data as $item) {
             if ($item == "all") {
                 return true;//所有都可以访问
             }
-            if(str_starts_with($url,$item))return true;
+
+            $parsedUrl = parse_url($item);
+            $path = $parsedUrl['path'];
+            $queryString = $parsedUrl['query'] ?? '';
+
+
+            if (str_starts_with($url, $path)) {
+                if (empty($queryString)) return true;
+                parse_str($queryString, $queryParams);
+                $count = sizeof($queryParams);
+                foreach ($queryParams as $key => $value) {
+                    if (arg($key) === $value) {
+                        $count--;
+                    }
+                }
+                if ($count <= 0) return true;
+            }
 
         }
+
         return false;
     }
 
